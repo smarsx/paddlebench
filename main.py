@@ -71,7 +71,7 @@ def warmup(ocr: PaddleOCR) -> None:
     # Tiny white image — ensures model weights are loaded on GPU
     img = Image.new("RGB", (32, 32), "white")
     bgr = _img_to_bgr_array(img)
-    _ = ocr.ocr(bgr, cls=True)
+    _ = ocr.predict(bgr)
 
 def parse_ocr_result_count(result) -> Tuple[int, int]:
     """
@@ -108,7 +108,7 @@ def ocr_tiff_file(fp: Path, ocr: PaddleOCR) -> Tuple[int, int]:
             except Exception:
                 pass
             bgr = _preprocess_for_ocr(frame)
-            result = ocr.ocr(bgr, cls=True)
+            result = ocr.predict(bgr)
             lines, _ = parse_ocr_result_count(result)
             total_lines += lines
     return pages, total_lines
@@ -133,7 +133,7 @@ def run_batch(directory: Path) -> None:
     assert_gpu_available()
 
     # Init OCR on GPU
-    ocr = PaddleOCR(lang="en", use_gpu=True)
+    ocr = PaddleOCR(lang="en")
     warmup(ocr)
 
     start = time.perf_counter()
